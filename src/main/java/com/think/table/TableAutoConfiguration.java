@@ -34,7 +34,7 @@ public class TableAutoConfiguration {
         }
     }
 
-    @Bean
+    @Bean(destroyMethod = "close")
     public DefaultTableManager tableManager(TableReaderFactory tableReaderFactory) {
         TableReader tableReader = tableReaderFactory.createTableReader();
         return new DefaultTableManager(tableProperties, tableReader);

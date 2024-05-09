@@ -2,8 +2,9 @@ package com.think.table;
 
 import com.think.table.properties.TableProperties;
 import com.think.table.reader.TableReader;
-import com.think.table.reader.TableReaderFactory;
 import com.think.table.repository.CfgRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -18,6 +19,7 @@ import java.util.function.Predicate;
  * @author veione
  */
 public class DefaultTableManager implements TableManager, AutoCloseable {
+    private final Logger logger = LoggerFactory.getLogger(DefaultTableManager.class);
     private final Map<Class<?>, CfgRepository<?, ?>> tableMap = new HashMap<>(64);
     private final TableReader reader;
     private final TableProperties properties;
@@ -27,13 +29,10 @@ public class DefaultTableManager implements TableManager, AutoCloseable {
         this.reader = reader;
     }
 
-    public void init() {
-        System.out.println("初始化加载资源数据");
-    }
-
     @Override
     public void close() {
-        System.out.println("容器关闭销毁数据");
+        tableMap.clear();
+        logger.info("配置表容器关闭,资源清理完毕 :)");
     }
 
     protected TableProperties getProperties() {
