@@ -1,6 +1,5 @@
 package com.think.table;
 
-import com.think.table.annotation.CfgTable;
 import com.think.table.properties.TableProperties;
 import com.think.table.reader.TableReader;
 import com.think.table.repository.CfgRepository;
@@ -12,7 +11,6 @@ import org.springframework.core.io.ClassPathResource;
 import java.io.File;
 import java.io.InputStream;
 import java.io.Serializable;
-import java.lang.reflect.Field;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -29,45 +27,45 @@ import java.util.function.Predicate;
  * @param <T>
  * @author veione
  */
-public class DefaultTableRepositoryInvocationHandler<T> implements CfgRepository<T, Serializable>, InvocationHandler {
+public class DefaultTableRepositoryInvocationHandler<T> implements CfgRepository<T, Serializable>, InvocationHandler, Reloadable {
     private static final Logger logger = LoggerFactory.getLogger(DefaultTableRepositoryInvocationHandler.class);
     private final DefaultTableManager manager;
     private final Class<T> clazz;
     private final Class<T> tableClazz;
     private final Map<Serializable, T> items = new HashMap<>(64);
+    private final TableDefinition definition;
 
     public DefaultTableRepositoryInvocationHandler(ApplicationContext applicationContext, Class<T> clazz) {
         this.manager = applicationContext.getBean(DefaultTableManager.class);
         this.clazz = clazz;
         this.tableClazz = getCfgBeanType(clazz);
+        this.definition = new TableDefinition(tableClazz);
         this.manager.register(tableClazz, this);
         this.init();
     }
 
     private void init() {
+        reload();
+    }
+
+    @Override
+    public synchronized void reload() {
+        // 先清理之前的资源
+        items.clear();
         TableProperties properties = manager.getProperties();
         TableReader reader = manager.getReader();
-        CfgTable cfgTableAnno = tableClazz.getAnnotation(CfgTable.class);
-        String tableFileName = String.format("%s%s%s.%s", properties.getPath(), File.separator, cfgTableAnno.value(), reader.getSuffix());
+        String tableFileName = String.format("%s%s%s.%s", properties.getPath(), File.separator, definition.getTableFileName(), reader.getSuffix());
+
         ClassPathResource resource = new ClassPathResource(tableFileName);
 
         try (InputStream inputStream = resource.getInputStream()) {
-            // 将JSON字符串数组转换为List<CfgItem>
             List<T> itemList = reader.read(inputStream, tableClazz);
             try {
-                // 打印转换后的Record对象列表
                 for (T item : itemList) {
-                    String idName = cfgTableAnno.id();
-
-                    Field idField;
-                    if (idName != null && !idName.isEmpty()) {
-                        idField = item.getClass().getDeclaredField(idName);
-                    } else {
-                        idField = item.getClass().getDeclaredField("id");
+                    Serializable id = definition.getIdValue(item);
+                    if (items.containsKey(id)) {
+                        throw new IllegalArgumentException(String.format("Table %s id %s duplicated", definition.getTableFileName(), id));
                     }
-                    idField.setAccessible(true);
-
-                    Serializable id = idField.getInt(item);
                     items.put(id, item);
                 }
             } catch (Exception e) {
@@ -81,11 +79,10 @@ public class DefaultTableRepositoryInvocationHandler<T> implements CfgRepository
     private <T> Class<T> getCfgBeanType(Class<?> clazz) {
         Type genericSuperclass = clazz.getGenericInterfaces()[0]; // Assuming the first interface is the one we want
 
-        if (!(genericSuperclass instanceof ParameterizedType)) {
+        if (!(genericSuperclass instanceof ParameterizedType parameterizedType)) {
             throw new IllegalArgumentException("Supertype is not parameterized");
         }
 
-        ParameterizedType parameterizedType = (ParameterizedType) genericSuperclass;
         Type[] actualTypeArguments = parameterizedType.getActualTypeArguments();
 
         if (actualTypeArguments.length == 0) {

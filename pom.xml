@@ -21,6 +21,7 @@
         <easyexcel.version>3.3.2</easyexcel.version>
         <commons-lang3.version>3.14.0</commons-lang3.version>
         <commons-collections4.version>4.4</commons-collections4.version>
+        <commons-io.version>2.16.0</commons-io.version>
     </properties>
 
     <dependencies>
@@ -58,6 +59,11 @@
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-collections4</artifactId>
             <version>${commons-collections4.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>commons-io</groupId>
+            <artifactId>commons-io</artifactId>
+            <version>${commons-io.version}</version>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>

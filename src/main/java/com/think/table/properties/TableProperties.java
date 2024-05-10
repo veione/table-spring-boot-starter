@@ -27,9 +27,9 @@ public class TableProperties {
      */
     private String path;
     /**
-     * 指定扫描包
+     * 配置表检查间隔时间(s)
      */
-    private String scanPackage;
+    private int interval = 5;
     /**
      * 格式：json、excel、csv
      */

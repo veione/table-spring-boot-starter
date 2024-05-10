@@ -103,4 +103,4 @@ Map集合定义比较特殊，因为需要键值对数据，所以这里采用�
 [table-spring-boot-starter-example](https://github.com/veione/table-spring-boot-starter-example)
 
 ### Ⅵ. TODO
-- [ ] 实现配置热更新功能
+- [x] 实现配置热更新功能
