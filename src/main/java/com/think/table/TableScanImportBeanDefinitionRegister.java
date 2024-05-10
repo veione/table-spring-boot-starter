@@ -1,8 +1,8 @@
 package com.think.table;
 
-import com.think.table.annotation.TableScan;
 import org.apache.commons.lang3.ArrayUtils;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.AnnotationMetadata;
@@ -17,9 +17,9 @@ public class TableScanImportBeanDefinitionRegister implements ImportBeanDefiniti
     @Override
     public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
         // 获取TableScan注解属性信息
-        AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(TableScan.class.getName()));
+        AnnotationAttributes annotationAttributes = AnnotationAttributes.fromMap(metadata.getAnnotationAttributes(ComponentScan.class.getName()));
         // 获取注解的属性值,拿到定义的扫描路径
-        String[] basePackages = annotationAttributes.getStringArray("basePackage");
+        String[] basePackages = annotationAttributes.getStringArray("basePackages");
 
         if (ArrayUtils.isEmpty(basePackages)) {
             String className = metadata.getClassName();

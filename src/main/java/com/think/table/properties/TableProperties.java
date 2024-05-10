@@ -4,14 +4,20 @@ import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
+import static com.think.table.properties.TableProperties.PREFIX;
+
 /**
  * Table properties
  *
  * @author veione
  */
 @Data
-@ConfigurationProperties("com.think.table")
+@ConfigurationProperties(PREFIX)
 public class TableProperties {
+    /**
+     * Table properties prefix
+     */
+    public static final String PREFIX = "com.think.table";
     /**
      * enabled table auto configuration
      */

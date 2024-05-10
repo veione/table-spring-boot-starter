@@ -9,7 +9,9 @@ import com.think.table.reader.TableReaderFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.GenericConversionService;
 
@@ -21,6 +23,8 @@ import org.springframework.core.convert.support.GenericConversionService;
 @Configuration
 @EnableConfigurationProperties({TableProperties.class, ExcelProperties.class, CsvProperties.class})
 @ConditionalOnProperty(prefix = "com.think.table", name = "enabled", havingValue = "true")
+@ComponentScan(basePackages = "com.think.table")
+@Import(TableScanImportBeanDefinitionRegister.class)
 public class TableAutoConfiguration {
     private final TableProperties tableProperties;
 
