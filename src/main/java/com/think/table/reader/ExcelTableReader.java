@@ -76,20 +76,18 @@ public class ExcelTableReader implements TableReader {
             }
 
             if (parseRowCount == headRowNumber) {
-                onHeadRowAPost();
+                onHeadRowParsePost();
             }
         }
 
         /**
          * 当头部数据解析完成
          */
-        private void onHeadRowAPost() {
+        private void onHeadRowParsePost() {
             // 字段描述
             Map<Integer, String> descMap = headRows.get(0);
-            // 字段类型
-            Map<Integer, String> typeMap = headRows.get(1);
             // 字段名称
-            Map<Integer, String> nameMap = headRows.get(2);
+            Map<Integer, String> nameMap = headRows.get(1);
 
             int colSize = nameMap.size();
 
@@ -97,7 +95,6 @@ public class ExcelTableReader implements TableReader {
                 ExcelHeader header = new ExcelHeader();
                 header.setCol(col);
                 header.setName(nameMap.get(col));
-                header.setType(typeMap.get(col));
                 header.setDescription(descMap.get(col));
 
                 headerMap.put(col, header);

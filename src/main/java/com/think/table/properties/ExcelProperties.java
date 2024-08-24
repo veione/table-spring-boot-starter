@@ -14,5 +14,5 @@ public class ExcelProperties {
     /**
      * header row count.
      */
-    private int headerRow = 3;
+    private int headerRow = 2;
 }

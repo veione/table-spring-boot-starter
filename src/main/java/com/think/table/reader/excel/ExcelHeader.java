@@ -6,6 +6,5 @@ import lombok.Data;
 public class ExcelHeader {
     private String name;
     private int col;
-    private String type;
     private String description;
 }
