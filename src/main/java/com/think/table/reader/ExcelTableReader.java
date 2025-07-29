@@ -10,6 +10,7 @@ import com.think.table.reader.util.TypeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 
 import java.io.InputStream;
 import java.lang.reflect.Constructor;
@@ -85,9 +86,9 @@ public class ExcelTableReader implements TableReader {
          */
         private void onHeadRowParsePost() {
             // 字段描述
-            Map<Integer, String> descMap = headRows.get(0);
+            Map<Integer, String> descMap = headRows.get(1);
             // 字段名称
-            Map<Integer, String> nameMap = headRows.get(1);
+            Map<Integer, String> nameMap = headRows.get(0);
 
             int colSize = nameMap.size();
 
@@ -113,7 +114,7 @@ public class ExcelTableReader implements TableReader {
                     CfgBeanField field = beanDefinition.getField(header.getName());
                     String value = entry.getValue();
                     if (value != null && !value.isEmpty()) {
-                        Object result = conversionService.convert(value, field.getTypeDescriptor());
+                        Object result = conversionService.convert(value, TypeDescriptor.valueOf(String.class), field.getTypeDescriptor());
                         fieldValueMap.put(field.getName(), result);
                     } else if (value == null && field.isPrimitive()) {
                         // 如果是原始类型的则不能为null,需要使用默认值进行填充
